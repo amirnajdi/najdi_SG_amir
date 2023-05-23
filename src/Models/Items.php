@@ -46,4 +46,41 @@ class Items extends Model
             return $exception->getMessage();
         }
     }
+
+    public function insertOneItem(string $title)
+    {
+        try {
+            $statement = $this->connection->prepare("INSERT INTO {$this->table} (title) VALUES (:title)");
+            $statement->execute([
+                'title' => $title
+            ]);
+            return $this->getLastItemInserted();
+        } catch (PDOException | Exception $exception) {
+            return $exception->getMessage();
+        }
+    }
+
+    private function getLastItemInserted(): array
+    {
+        try {
+            $lastItemInsertedId = $this->connection->lastInsertId();
+            return $this->findById($lastItemInsertedId);
+        } catch (PDOException | Exception $exception) {
+            return $exception->getMessage();
+        }
+    }
+
+    public function findById(int $id): array
+    {
+        try {
+            $statement = $this->connection->prepare("SELECT * FROM {$this->table} WHERE id=:id");
+            $statement->execute([
+                'id' => $id
+            ]);
+            $result = $statement->fetch(PDO::FETCH_ORI_FIRST);
+            return !$result ? [] : $result;
+        } catch (PDOException | Exception $exception) {
+            return $exception->getMessage();
+        }
+    }
 }

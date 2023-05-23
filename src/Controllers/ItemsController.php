@@ -30,4 +30,23 @@ class ItemsController
         $response = (new Response())->setData('item', $item);
         $response->sendAsJson();
     }
+
+    public function create()
+    {
+        $title = htmlspecialchars(trim($_POST['title']));
+        if ($title == null) {
+            $response = (new Response())->setHTTPStatusCode(HTTPStatusCode::UNPROCESSABLE_ENTITY)
+                ->setStatus(ResponseStatus::UNPROCESSABLE_ENTITY)
+                ->setMessage('title is a required field!');
+            return $response->sendAsJson();
+        }
+
+        $item = (new Items)->insertOneItem($title);
+
+        $response = (new Response())->setData('item', $item)
+            ->setStatus(ResponseStatus::CREATED)
+            ->setHTTPStatusCode(HTTPStatusCode::CREATED);
+
+        $response->sendAsJson();
+    }
 }
