@@ -28,7 +28,21 @@ class Items extends Model
         try {
             $statement = $this->connection->query("SELECT * FROM {$this->table}");
             return $statement->fetchAll(PDO::FETCH_ASSOC);
-        } catch (PDOException|Exception $exception) {
+        } catch (PDOException | Exception $exception) {
+            return $exception->getMessage();
+        }
+    }
+
+    public function findByUuid(string $uuid): array
+    {
+        try {
+            $statement = $this->connection->prepare("SELECT * FROM {$this->table} WHERE uuid=:uuid");
+            $statement->execute([
+                'uuid' => $uuid
+            ]);
+            $result = $statement->fetch(PDO::FETCH_ORI_FIRST);
+            return !$result ? [] : $result;
+        } catch (PDOException | Exception $exception) {
             return $exception->getMessage();
         }
     }

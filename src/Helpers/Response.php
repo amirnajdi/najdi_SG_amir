@@ -6,12 +6,14 @@ enum ResponseStatus: string
 {
     case SUCCESS = 'success';
     case SERVER_ERROR = 'Server Error';
+    case NOT_FOUND = "Not Found";
 }
 
 enum HTTPStatusCode: int
 {
     case SUCCESS = 200;
     case SERVER_ERROR = 500;
+    case NOT_FOUND = 404;
 }
 
 class Response
