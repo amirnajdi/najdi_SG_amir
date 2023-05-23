@@ -85,10 +85,22 @@ class Items extends Model
     }
 
     public function deleteItemByUuid(string $uuid): bool
-     {
+    {
         try {
             $statement = $this->connection->prepare("DELETE FROM {$this->table} WHERE uuid = :uuid");
             $statement->bindParam(':uuid', $uuid, PDO::PARAM_STR);
+            return $statement->execute();
+        } catch (PDOException | Exception $exception) {
+            return $exception->getMessage();
+        }
+    }
+
+    public function update(string $uuid, string $title): bool
+    {
+        try {
+            $statement = $this->connection->prepare("UPDATE {$this->table} SET title = :title, updated_at = current_timestamp() WHERE uuid = :uuid");
+            $statement->bindParam(':uuid', $uuid, PDO::PARAM_STR);
+            $statement->bindParam(':title', $title, PDO::PARAM_STR);
             return $statement->execute();
         } catch (PDOException | Exception $exception) {
             return $exception->getMessage();
