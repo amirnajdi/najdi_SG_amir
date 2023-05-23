@@ -83,4 +83,15 @@ class Items extends Model
             return $exception->getMessage();
         }
     }
+
+    public function deleteItemByUuid(string $uuid): bool
+     {
+        try {
+            $statement = $this->connection->prepare("DELETE FROM {$this->table} WHERE uuid = :uuid");
+            $statement->bindParam(':uuid', $uuid, PDO::PARAM_STR);
+            return $statement->execute();
+        } catch (PDOException | Exception $exception) {
+            return $exception->getMessage();
+        }
+    }
 }

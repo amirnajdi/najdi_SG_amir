@@ -49,4 +49,28 @@ class ItemsController
 
         $response->sendAsJson();
     }
+
+    public function delete(string $uuid)
+    {
+        $response = new Response();
+        $itemInstane = new Items();
+        $item = $itemInstane->findByUuid($uuid);
+        if ($item == []) {
+            return $response->setHTTPStatusCode(HTTPStatusCode::NOT_FOUND)
+                ->setStatus(ResponseStatus::NOT_FOUND)
+                ->setMessage('The item was not found!')
+                ->sendAsJson();
+        }
+
+        $deleteStatus = $itemInstane->deleteItemByUuid($uuid);
+        if (!$deleteStatus) {
+            return $response->setHTTPStatusCode(HTTPStatusCode::SERVER_ERROR)
+                ->setStatus(ResponseStatus::SERVER_ERROR)
+                ->setMessage('The item is not deleted, something is wrong!')
+                ->sendAsJson();
+        }
+
+        $response->setMessage("The item was deleted successfully from the shopping list")
+            ->sendAsJson();
+    }
 }
