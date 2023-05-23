@@ -2,6 +2,10 @@
 
 namespace App\Models;
 
+use Exception;
+use PDO;
+use PDOException;
+
 class Items extends Model
 {
 
@@ -16,5 +20,16 @@ class Items extends Model
     {
         parent::__construct();
         $this->table = "items";
+    }
+
+
+    public function all()
+    {
+        try {
+            $statement = $this->connection->query("SELECT * FROM {$this->table}");
+            return $statement->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException|Exception $exception) {
+            return $exception->getMessage();
+        }
     }
 }
