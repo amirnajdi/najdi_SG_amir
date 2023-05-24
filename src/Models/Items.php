@@ -106,4 +106,17 @@ class Items extends Model
             return $exception->getMessage();
         }
     }
+
+    public function updateStatus(string $uuid, bool $isDone)
+    {
+        try {
+            $isDoneAt = $isDone ? date('d-m-y h:i:s'): null;
+            $statement = $this->connection->prepare("UPDATE {$this->table} SET is_done_at = :is_done_at WHERE uuid = :uuid");
+            $statement->bindParam(':uuid', $uuid, PDO::PARAM_STR);
+            $statement->bindParam(':is_done_at', $isDoneAt);
+            return $statement->execute();
+        } catch (PDOException | Exception $exception) {
+            return $exception->getMessage();
+        }
+    }
 }

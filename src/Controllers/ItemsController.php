@@ -106,4 +106,32 @@ class ItemsController
         $response->setMessage("The item was deleted successfully from the shopping list")
             ->sendAsJson();
     }
+
+    public function toggleStatus(string $uuid)
+    {
+        $response = new Response();
+        $itemInstane = new Items();
+        $item = $itemInstane->findByUuid($uuid);
+        if ($item == []) {
+            return $response->setHTTPStatusCode(HTTPStatusCode::NOT_FOUND)
+                ->setStatus(ResponseStatus::NOT_FOUND)
+                ->setMessage('The item was not found!')
+                ->sendAsJson();
+        }
+
+        // if item is_done_at is null, it means the item is not done yet and we change the is_done_at to the current date,
+        // and if is_done_at is not null it means is done and we change to null
+        $changeStatusTo = $item['is_done_at'] == null ? true: false;
+
+        $deleteStatus = $itemInstane->updateStatus($uuid, $changeStatusTo);
+        if (!$deleteStatus) {
+            return $response->setHTTPStatusCode(HTTPStatusCode::SERVER_ERROR)
+                ->setStatus(ResponseStatus::SERVER_ERROR)
+                ->setMessage('The item is not updated, something is wrong!')
+                ->sendAsJson();
+        }
+
+        $response->setMessage("The shopping list item status was updated successfully")
+            ->sendAsJson();
+    }
 }
