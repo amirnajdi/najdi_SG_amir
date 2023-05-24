@@ -53,6 +53,7 @@ class Response
 
     public function sendAsJson()
     {
+        header('Content-Type: application/json');
         $response = ['status' => $this->status->value];
 
         if ($this->message != null) $response['message'] = $this->message;
