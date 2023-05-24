@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Helpers\HTTPStatusCode;
+use App\Helpers\Request;
 use App\Helpers\Response;
 use App\Helpers\ResponseStatus;
 use App\Models\Items;
@@ -29,10 +30,10 @@ class ItemsController
 
     public function create()
     {
-        $title = htmlspecialchars(trim($_POST['title']));
-        if ($title == null) return $this->titleIsRequired();
+        $data = Request::getAllData();
+        if (!isset($data['title'])) return $this->titleIsRequired();
 
-        $item = (new Items)->insertOneItem($title);
+        $item = (new Items)->insertOneItem($data['title']);
 
         $response = (new Response())->setData('item', $item)
             ->setStatus(ResponseStatus::CREATED)
@@ -43,9 +44,8 @@ class ItemsController
 
     public function edit(string $uuid)
     {
-        parse_str(file_get_contents("php://input"), $data);
-        $title = htmlspecialchars(trim($data['title']));
-        if ($title == null) return $this->titleIsRequired();
+        $data = Request::getAllData();
+        if (!isset($data['title'])) return $this->titleIsRequired();
 
         $response = new Response();
         $itemInstane = new Items();
@@ -53,7 +53,7 @@ class ItemsController
         $item = $itemInstane->findByUuid($uuid);
         if ($item == []) return $this->itemNotFound();
 
-        $deleteStatus = $itemInstane->update($uuid, $title);
+        $deleteStatus = $itemInstane->update($uuid, $data['title']);
         if (!$deleteStatus) {
             return $response->setHTTPStatusCode(HTTPStatusCode::SERVER_ERROR)
                 ->setStatus(ResponseStatus::SERVER_ERROR)
@@ -69,7 +69,7 @@ class ItemsController
     {
         $response = new Response();
         $itemInstane = new Items();
-        
+
         $item = $itemInstane->findByUuid($uuid);
         if ($item == []) return $this->itemNotFound();
 
