@@ -45,9 +45,9 @@ class ItemsController
 
         $response = (new Response())->setData('item', $item)
             ->setStatus(ResponseStatus::CREATED)
-            ->setHTTPStatusCode(HTTPStatusCode::CREATED);
-
-        $response->sendAsJson();
+            ->setHTTPStatusCode(HTTPStatusCode::CREATED)
+            ->setMessage("The new item add successfully to your shopping list")
+            ->sendAsJson();
     }
 
     public function edit(string $uuid)
