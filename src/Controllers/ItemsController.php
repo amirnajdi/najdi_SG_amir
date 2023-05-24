@@ -52,7 +52,7 @@ class ItemsController
 
     public function edit(string $uuid)
     {
-        
+        parse_str(file_get_contents("php://input"),$data);
         $title = htmlspecialchars(trim($data['title']));
         if ($title == null) {
             $response = (new Response())->setHTTPStatusCode(HTTPStatusCode::UNPROCESSABLE_ENTITY)
@@ -75,11 +75,11 @@ class ItemsController
         if (!$deleteStatus) {
             return $response->setHTTPStatusCode(HTTPStatusCode::SERVER_ERROR)
                 ->setStatus(ResponseStatus::SERVER_ERROR)
-                ->setMessage('The item is not deleted, something is wrong!')
+                ->setMessage('The item is not updated, something is wrong!')
                 ->sendAsJson();
         }
 
-        $response->setMessage("The item was deleted successfully from the shopping list")
+        $response->setMessage("The item was updated successfully")
             ->sendAsJson();
     }
 
