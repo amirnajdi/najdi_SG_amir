@@ -37,9 +37,8 @@ class Items extends Model
     {
         try {
             $statement = $this->connection->prepare("SELECT * FROM {$this->table} WHERE uuid=:uuid");
-            $statement->execute([
-                'uuid' => $uuid
-            ]);
+            $statement->bindParam(':uuid', $uuid, PDO::PARAM_STR);
+            $statement->execute();
             $result = $statement->fetch(PDO::FETCH_ORI_FIRST);
             return !$result ? [] : $result;
         } catch (PDOException | Exception $exception) {
@@ -51,9 +50,8 @@ class Items extends Model
     {
         try {
             $statement = $this->connection->prepare("INSERT INTO {$this->table} (title) VALUES (:title)");
-            $statement->execute([
-                'title' => $title
-            ]);
+            $statement->bindParam(':title', $title, PDO::PARAM_STR);
+            $statement->execute();
             return $this->getLastItemInserted();
         } catch (PDOException | Exception $exception) {
             return $exception->getMessage();
@@ -74,9 +72,8 @@ class Items extends Model
     {
         try {
             $statement = $this->connection->prepare("SELECT * FROM {$this->table} WHERE id=:id");
-            $statement->execute([
-                'id' => $id
-            ]);
+            $statement->bindParam(':id', $id, PDO::PARAM_INT);
+            $statement->execute();
             $result = $statement->fetch(PDO::FETCH_ORI_FIRST);
             return !$result ? [] : $result;
         } catch (PDOException | Exception $exception) {
