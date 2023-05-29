@@ -12,7 +12,7 @@ use UnexpectedValueException;
 
 class Authentication
 {
-    private static array $user;
+    private static array $user = [];
     const LIFE_TIME_ONE_HOUR = 60;
 
     public static function login(string $email, #[\SensitiveParameter] string $password): array|bool

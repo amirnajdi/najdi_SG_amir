@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Helpers\Authentication;
 use Exception;
 use PDO;
 use PDOException;
@@ -16,17 +17,22 @@ class Items extends Model
     public string $created_at;
     public string $updated_at;
 
+    private array $user;
+
     public function __construct()
     {
         parent::__construct();
         $this->table = "items";
+        $this->user = Authentication::getCurrentUser();
     }
 
 
     public function all()
     {
         try {
-            $statement = $this->connection->query("SELECT * FROM {$this->table}");
+            $statement = $this->connection->prepare("SELECT * FROM {$this->table} WHERE user_id=:user_id");
+            $statement->bindParam(':user_id', $this->user['id'], PDO::PARAM_INT);
+            $statement->execute();
             return $statement->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException | Exception $exception) {
             return $exception->getMessage();
@@ -36,8 +42,9 @@ class Items extends Model
     public function findByUuid(string $uuid): array
     {
         try {
-            $statement = $this->connection->prepare("SELECT * FROM {$this->table} WHERE uuid=:uuid");
+            $statement = $this->connection->prepare("SELECT * FROM {$this->table} WHERE uuid=:uuid and user_id=:user_id");
             $statement->bindParam(':uuid', $uuid, PDO::PARAM_STR);
+            $statement->bindParam(':user_id', $this->user['id'], PDO::PARAM_INT);
             $statement->execute();
             $result = $statement->fetch(PDO::FETCH_ORI_FIRST);
             return !$result ? [] : $result;
@@ -49,8 +56,9 @@ class Items extends Model
     public function insertOneItem(string $title)
     {
         try {
-            $statement = $this->connection->prepare("INSERT INTO {$this->table} (title) VALUES (:title)");
+            $statement = $this->connection->prepare("INSERT INTO {$this->table} (title, user_id) VALUES (:title, :user_id)");
             $statement->bindParam(':title', $title, PDO::PARAM_STR);
+            $statement->bindParam(':user_id', $this->user['id'], PDO::PARAM_INT);
             $statement->execute();
             return $this->getLastItemInserted();
         } catch (PDOException | Exception $exception) {
@@ -71,8 +79,9 @@ class Items extends Model
     public function findById(int $id): array
     {
         try {
-            $statement = $this->connection->prepare("SELECT * FROM {$this->table} WHERE id=:id");
+            $statement = $this->connection->prepare("SELECT * FROM {$this->table} WHERE id=:id and user_id=:user_id");
             $statement->bindParam(':id', $id, PDO::PARAM_INT);
+            $statement->bindParam(':user_id', $this->user['id'], PDO::PARAM_INT);
             $statement->execute();
             $result = $statement->fetch(PDO::FETCH_ORI_FIRST);
             return !$result ? [] : $result;
@@ -84,8 +93,9 @@ class Items extends Model
     public function deleteItemByUuid(string $uuid): bool
     {
         try {
-            $statement = $this->connection->prepare("DELETE FROM {$this->table} WHERE uuid = :uuid");
+            $statement = $this->connection->prepare("DELETE FROM {$this->table} WHERE uuid = :uuid and user_id=:user_id");
             $statement->bindParam(':uuid', $uuid, PDO::PARAM_STR);
+            $statement->bindParam(':user_id', $this->user['id'], PDO::PARAM_INT);
             return $statement->execute();
         } catch (PDOException | Exception $exception) {
             return $exception->getMessage();
@@ -107,10 +117,11 @@ class Items extends Model
     public function updateStatus(string $uuid, bool $isDone)
     {
         try {
-            $isDoneAt = $isDone ? date('d-m-y h:i:s'): null;
-            $statement = $this->connection->prepare("UPDATE {$this->table} SET is_done_at = :is_done_at WHERE uuid = :uuid");
+            $isDoneAt = $isDone ? date('d-m-y h:i:s') : null;
+            $statement = $this->connection->prepare("UPDATE {$this->table} SET is_done_at = :is_done_at WHERE uuid = :uuid and user_id=:user_id");
             $statement->bindParam(':uuid', $uuid, PDO::PARAM_STR);
             $statement->bindParam(':is_done_at', $isDoneAt);
+            $statement->bindParam(':user_id', $this->user['id'], PDO::PARAM_INT);
             return $statement->execute();
         } catch (PDOException | Exception $exception) {
             return $exception->getMessage();

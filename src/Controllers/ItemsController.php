@@ -2,14 +2,26 @@
 
 namespace App\Controllers;
 
-use App\Helpers\HTTPStatusCode;
+use App\Models\Items;
 use App\Helpers\Request;
 use App\Helpers\Response;
+use App\Helpers\Authentication;
+use App\Helpers\HTTPStatusCode;
 use App\Helpers\ResponseStatus;
-use App\Models\Items;
 
 class ItemsController
 {
+
+    public function __construct()
+    {
+        if (!Authentication::isUserAuthenticated()) {
+            (new Response())->setHTTPStatusCode(HTTPStatusCode::UNAUTHORIZED)
+                ->setStatus(ResponseStatus::UNAUTHORIZED)
+                ->setMessage('Unauthorized')
+                ->sendAsJson();
+            exit();
+        }
+    }
 
     public function get()
     {
