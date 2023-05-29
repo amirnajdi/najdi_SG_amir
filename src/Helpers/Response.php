@@ -9,6 +9,7 @@ enum ResponseStatus: string
     case SERVER_ERROR = 'Server Error';
     case NOT_FOUND = "Not Found";
     case UNPROCESSABLE_ENTITY = "Unprocessable Entity";
+    case UNAUTHORIZED = "Unauthorized";
 }
 
 enum HTTPStatusCode: int
@@ -18,6 +19,7 @@ enum HTTPStatusCode: int
     case SERVER_ERROR = 500;
     case NOT_FOUND = 404;
     case UNPROCESSABLE_ENTITY = 422;
+    case UNAUTHORIZED = 401;
 }
 
 class Response
