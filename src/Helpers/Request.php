@@ -41,4 +41,28 @@ class Request
 
         return $data;
     }
+
+    public static function getHeaders(): array
+    {
+        $headers = [];
+        foreach ($_SERVER as $key => $value) {
+            if (strpos($key, 'HTTP_') === 0) {
+                $headers[str_replace(' ', '', ucwords(str_replace('_', ' ', strtolower(substr($key, 5)))))] = $value;
+            }
+        }
+
+        return $headers;
+    }
+
+    public static function getHeader(string $key): ?string
+    {
+        $headers = self::getHeaders();
+        return $headers[$key] ?? null;
+    }
+
+    public static function getAuthorizationToken(): ?string
+    {
+        $authorization = self::getHeader('Authorization');
+        return $authorization != null ? trim(str_replace("Bearer", "", $authorization)) : null;
+    }
 }

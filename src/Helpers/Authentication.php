@@ -12,7 +12,7 @@ use UnexpectedValueException;
 
 class Authentication
 {
-
+    private static array $user;
     const LIFE_TIME_ONE_HOUR = 60;
 
     public static function login(string $email, #[\SensitiveParameter] string $password): array|bool
@@ -24,7 +24,7 @@ class Authentication
         if (!password_verify($password, $user['password']))
             return false;
 
-
+        self::setCurrectUser($user);
         return ['token' => self::createToken($user['uuid']), 'user' => $user];
     }
 
@@ -56,5 +56,27 @@ class Authentication
         } catch (LogicException | UnexpectedValueException | Exception $e) {
             return false;
         }
+    }
+
+    public static function getCurrentUser()
+    {
+        return self::$user;
+    }
+
+    public static function setCurrectUser(array $user)
+    {
+        self::$user = $user;
+    }
+
+    public static function isUserAuthenticated(): bool
+    {
+        if (!$token = Request::getAuthorizationToken())
+            return false;
+
+        if (!$user = Authentication::getUserFromJWTToken($token))
+            return false;
+
+        Authentication::setCurrectUser($user);
+        return true;
     }
 }
