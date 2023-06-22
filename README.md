@@ -1,11 +1,11 @@
-# najdi_SG_amir
+# Shopping list
 This project is a simple shopping list, Create By php v8.1
 
 ### Run Project
-1. Clone the proect on your os
+1. Clone the project on your os
 2. Run ```bash composer install```
 3. Import ```doc/shopping_list.sql``` on your MySQL
-4. Create ```.env``` file base on ```.env.expamle``` file and edit base on your setting
+4. Create ```.env``` file base on ```.env.example`` file and edit base on your setting
 5. Run ```bash php -S localhost:8090 -t src/Public/ ``` 
 ### Services
 1. **Get All Items** (GET): ```{{baseUrl}}/items```
